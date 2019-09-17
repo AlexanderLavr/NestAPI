@@ -12,7 +12,7 @@ import { usersProviders, rolesProviders , usersrolesProviders} from './users/use
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { authProviders } from './auth/auth.providers';
-import { LocalStrategy } from './auth/local.strategy';
+// import { LocalStrategy } from './auth/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
@@ -30,7 +30,7 @@ import { ConfigModule } from './config/config.module';
     }),],
   controllers: [BooksController, UsersController, AuthController],
   providers: [
-    LocalStrategy,
+    // LocalStrategy,
     JwtStrategy,
     BooksService,
     ...booksProviders,

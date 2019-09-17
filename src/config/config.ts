@@ -8,9 +8,9 @@ export default {
     DB_NAME: process.env.DB_NAME,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_PORT: process.env.DB_PORT,
-    DB_USER: process.env.DB_USER || "root",
+    DB_USER: process.env.DB_USER,
 
     JWT_ENCRYPTION: process.env.JWT_ENCRYPTION || "jwt_please_change",
     JWT_EXPIRATION: process.env.JWT_EXPIRATION || "1h",
-    SALT_ROUNDS: process.env.SALT_ROUNDS || 10
+    SALT_ROUNDS: process.env.SALT_ROUNDS
 };

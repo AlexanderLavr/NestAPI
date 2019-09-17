@@ -16,5 +16,4 @@ export class auth extends Model<auth> {
 
   @Column
   email: string;
-
 }

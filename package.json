@@ -32,6 +32,7 @@
     "dotenv": "^8.1.0",
     "helmet": "^3.20.0",
     "jwt-then": "^1.0.1",
+    "logzio-nodejs": "^1.0.7",
     "morgan": "^1.9.1",
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5",

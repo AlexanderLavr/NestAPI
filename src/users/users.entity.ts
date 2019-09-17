@@ -40,10 +40,8 @@ export class users extends Model<users> {
   @Column
   imageProfile: string;
 
-
   @BelongsToMany(() => roles, () => users_roles)
   roleId: users_roles[];
-
 }
 
 @Table

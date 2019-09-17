@@ -16,9 +16,14 @@ export class books extends Model<books> {
   title: string;
 
   @Column
-  price: number;
+  price: string;
 
   @Column
   description: string;
 
+  @Column
+  amount: string;
+
+  @Column
+  choosePhoto: string;
 }

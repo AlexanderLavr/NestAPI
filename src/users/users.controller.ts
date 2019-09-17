@@ -14,28 +14,27 @@ export class UsersController {
         return this.usersService.findAll(res);
     }
 
-    @Get('/avatar/:id')
+    @Put('/avatar/:id')
     getAvatar(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.getAvatar(req, res);
+        return this.usersService.changeAvatar(req, res);
     }
 
     @Get('/:id')
-    findOne(@Req() req: Request, @Res() res: Response): any {
+    findOne(@Req() req: Request, @Res() res: Response): any {//
         return this.usersService.findOne(req, res);
     }
 
     @Delete('/:id')
-    delete(@Req() req: Request, @Res() res: Response): any {
+    delete(@Req() req: Request, @Res() res: Response): any {//
         return this.usersService.delete(req, res);
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    update(@Req() req: Request, @Res() res: Response): any {
+    update(@Req() req: Request, @Res() res: Response): any {//
         return this.usersService.update(req, res);
     }
 
-    @Post("/signup")
+    @Post('/register')
     registerNewUser(@Req() req: Request, @Res() res: Response): any {
         return this.usersService.registerNewUser(req, res);
     }
