@@ -12,7 +12,7 @@ export const databaseProviders = [
       const sequelize = new Sequelize({
         dialect: 'mysql',   
         host: env.DB_HOST,
-        port: 3306,
+        port: Number(env.DB_PORT),
         username: env.DB_USER,
         password: env.DB_PASSWORD,
         database: env.DB_NAME,

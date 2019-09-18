@@ -1,6 +1,7 @@
 import { Injectable, Inject, HttpException } from '@nestjs/common';
 import { books } from './books.entity';
 import { Response } from 'express';
+import { getRole } from '../help/actions';
 
 
 @Injectable()
@@ -42,19 +43,27 @@ export class BooksService {
   }
 
   async deleteBook(req, res): Promise<any> {
-
-    if (req.body) {
-    await req.body.forEach(async id => {
-        await this.BOOKS_REPOSITORY.destroy({ where: { _id: id } })
-    });
-      return res.status(200).send({
-        success: true
+    let role = await getRole(req.headers.authorization);
+    try{
+      if(role.isAdmin === 'admin'){
+        if (req.body) {
+        await req.body.forEach(async id => {
+            await this.BOOKS_REPOSITORY.destroy({ where: { _id: id } })
+        });
+          return res.status(200).send({
+            success: true
+          });
+        } else return res.status(404).send({
+          success: false,
+          message: 'Requset body is incorrect!',
+        });
+      }
+    }catch (err) {
+      res.status(500).send({
+        success: false,
+        message: err
       });
-    } else return res.status(404).send({
-      success: false,
-      message: 'Requset body is incorrect!',
-    });
-
+    }
   }
 
   async addBook(req, res): Promise<any> {

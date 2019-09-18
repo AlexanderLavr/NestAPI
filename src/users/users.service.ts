@@ -3,7 +3,8 @@ import { users, users_roles, roles } from './users.entity';
 import * as bcrypt from "bcrypt"
 import * as jwt from "jwt-then";
 import { IsEmail } from 'sequelize-typescript';
-import { walidRegister } from '../help/reg.valid'
+import { walidRegister } from '../help/register.valid'
+import { getRole } from '../help/actions';
 
 
 @Injectable()
@@ -38,20 +39,22 @@ export class UsersService {
     }
   }
   async findOne(req, res): Promise<users[]> {
+    let role = await getRole(req.headers.authorization);
     try {
-      const user = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: req.params.id } });
-      if (user) {
-        return res.status(200).send({
-          success: true,
-          data: user
-        });
-      } else {
-        return res.status(404).send({
-          success: false,
-          message: 'User not found',
-          data: null
-        });
-
+      if(role.isAdmin === 'admin'){
+        const user = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: req.params.id } });
+        if (user) {
+          return res.status(200).send({
+            success: true,
+            data: user
+          });
+        } else {
+          return res.status(404).send({
+            success: false,
+            message: 'User not found',
+            data: null
+          });
+        }
       }
     } catch (err) {
       res.status(500).send({
@@ -86,23 +89,43 @@ export class UsersService {
     }
   }
 
-  async delete(req, res): Promise<any> {
-    try {
-      const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
-      if (check) {
-        await this.USER_ROLES_REPO.destroy({ where: { users_id: req.params.id } });
-        await this.USERS_REPOSITORY.destroy({ where: { id: req.params.id } });
-        return res.status(200).send({
-          success: true,
-          message: 'Delete is done'
-        });
-      } else {
-        return res.status(404).send({
-          success: false,
-          message: 'User not found',
-          data: null
-        });
 
+  async getAvatar(req, res): Promise<any> {
+    try {
+      const users: any = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['imageProfile'], where: { id: req.params.id } });
+      const avatar = users.dataValues.imageProfile
+        res.status(200).send({
+          success: true,
+          data: avatar
+        });
+    }catch(err){
+      res.status(500).send({
+        success: false,
+        message: err
+      });
+    }
+  }
+
+  async delete(req, res): Promise<any> {
+    let role = await getRole(req.headers.authorization);
+    try {
+      if(role.isAdmin === 'admin'){
+        const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
+        if (check) {
+          await this.USER_ROLES_REPO.destroy({ where: { users_id: req.params.id } });
+          await this.USERS_REPOSITORY.destroy({ where: { id: req.params.id } });
+          return res.status(200).send({
+            success: true,
+            message: 'Delete is done'
+          });
+        } else {
+          return res.status(404).send({
+            success: false,
+            message: 'User not found',
+            data: null
+          });
+
+        }
       }
     } catch (err) {
       res.status(500).send({
