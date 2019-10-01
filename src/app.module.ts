@@ -2,21 +2,20 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from './db.connection/db-module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from './environment/config.module';
 
 import { authProviders, booksProviders, usersProviders, rolesProviders, usersrolesProviders} from './providers';
 import { AuthController, UsersController, BooksController } from './controllers';
 import { AuthService, BooksService, UsersService } from './services';
+
+import { AuthRepository, BooksRepository, UsersRepository, UserRolesRepository } from './repositories'
 
 import { LocalStrategy, JwtStrategy } from './common';
 
 import { jwtConstants } from './secrets/jwtSecretKey';
 
 
-
 @Module({
   imports: [
-    ConfigModule,
     DatabaseModule,
     PassportModule,
     JwtModule.register({
@@ -25,6 +24,10 @@ import { jwtConstants } from './secrets/jwtSecretKey';
     }),],
   controllers: [BooksController, UsersController, AuthController],
   providers: [
+    AuthRepository,
+    BooksRepository,
+    UsersRepository,
+    UserRolesRepository,
     LocalStrategy,
     JwtStrategy,
     BooksService,

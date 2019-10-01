@@ -47,5 +47,4 @@ export class UsersController {
     registerNewUser(@Req() req: Request, @Res() res: Response): any {
         return this.usersService.registerNewUser(req, res);
     }
-
 }

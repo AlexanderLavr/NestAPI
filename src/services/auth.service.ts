@@ -1,36 +1,44 @@
-import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from "bcrypt"
-import { Users, Roles } from '../entities';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
-import { ConfigService } from '../environment/config.service';
-import * as jwtr from "jwt-then";
-import { validLogin } from '../help/login.valid';
+import * as jwtr from 'jwt-then';
+import { AuthRepository } from '../repositories';
 
 
 
 @Injectable()
 export class AuthService{
   public jwtService: JwtService;
-  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof Users
 
-  constructor(config: ConfigService) {
-    
-  }
+  constructor(public AuthRepository : AuthRepository) {}
 
   async validateUser(email: string, password: string): Promise<any> {
 
-    let loginValid = await validLogin(email, password)
-    if(loginValid.stateValid !== 2 ){
-      throw new HttpException(loginValid.errorObj, 404);
+    const errorObj = {
+      logErrorEmail: '',
+      logErrorPassword: ''
     }
-    
-    const user: any = await this.AUTH_REPOSITORY.findOne<Users>({ where: { email: email } })
+    let stateValid = 0;
+    const passWordExpr = new RegExp(/^[0-9]{3,}$/);
+    const emailRegExpr = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
+
+    if(!emailRegExpr.test(email)){
+        errorObj.logErrorEmail = 'Error: uncorrectEmail value!';
+    }else{++stateValid}
+    if(!passWordExpr.test(password)){
+        errorObj.logErrorPassword = 'Error: допустимы буквы латинского алфавита и цифры не менее 3-х';
+    }else{++stateValid}
+
+    if(stateValid !== 2 ){
+      throw new HttpException(errorObj, 404);
+    }
+  
+    const user: any = await this.AuthRepository.findOneEmail(email)
     if (!user) {
       return null
     }
 
-    const matchPasswords = await bcrypt.compare(password, user.dataValues.password);
+    const matchPasswords = await this.AuthRepository.comparePassword(password, user.dataValues.password)
     if (user && matchPasswords) {
       return user.dataValues;
     }else return null
@@ -38,19 +46,9 @@ export class AuthService{
 
      
  public async login(user, res){   
-    let permissions: any[] = [];
-    await this.AUTH_REPOSITORY.findAll<Users>({
-      where: { id: user.id },
-      include: [{
-        model: Roles,
-      }]
-
-    }).then((rolen: any) => rolen.forEach(el => {
-      el.dataRoleId.forEach(element => {
-        permissions.push(element.dataValues.roleName);
-      });
-    }))
-
+    let permissions: any = [];
+    permissions = await this.AuthRepository.findAllRore(user.id, permissions)
+ 
     const userLogin = {
       id: user.id,
       firstname: user.firstname,
