@@ -1,4 +1,4 @@
-import { users, roles , users_roles} from './users.entity';
+import { users, roles , users_roles} from '../entities';
 
 export const usersProviders = [
   {
@@ -20,3 +20,4 @@ export const usersrolesProviders = [
     useValue: users_roles,
   },
 ];
+

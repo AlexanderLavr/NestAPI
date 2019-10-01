@@ -1,5 +1,5 @@
 import { Injectable, Inject, HttpException } from '@nestjs/common';
-import { books } from './books.entity';
+import { books } from '../entities';
 import { Response } from 'express';
 import { getRole } from '../help/actions';
 

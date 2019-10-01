@@ -1,23 +1,21 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from "bcrypt"
-import { users, roles } from '../users/users.entity';
+import { users, roles } from '../entities';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
 import { ConfigService } from '../config/config.service';
 import * as jwtr from "jwt-then";
-import { validLogin } from '../help//login.valid';
+import { validLogin } from '../help/login.valid';
 
 
 
 @Injectable()
-
 export class AuthService{
-  private test: any;
   public jwtService: JwtService;
   @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof users
 
   constructor(config: ConfigService) {
-    this.test = config.get('APP');
+    
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -39,7 +37,7 @@ export class AuthService{
   }
 
      
-  async login(user, res){   
+ public async login(user, res){   
     let permissions: any[] = [];
     await this.AUTH_REPOSITORY.findAll<users>({
       where: { id: user.id },

@@ -1,4 +1,4 @@
-import { books } from './books.entity';
+import { books } from '../entities';
 
 export const booksProviders = [
   {

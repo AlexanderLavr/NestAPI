@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { users, users_roles, roles } from './users.entity';
+import { users, users_roles, roles } from '../entities';
 import * as bcrypt from "bcrypt"
 import * as jwt from "jwt-then";
 import { IsEmail } from 'sequelize-typescript';

@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
-import { books } from '../books/books.entity';
-import { users, users_roles, roles } from '../users/users.entity';
+import { books } from '../entities';
+import { users, users_roles, roles } from '../entities';
 import env from '../config/config'
  
 export const databaseProviders = [
