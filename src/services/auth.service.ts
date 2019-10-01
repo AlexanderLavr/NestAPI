@@ -1,9 +1,9 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from "bcrypt"
-import { users, roles } from '../entities';
+import { Users, Roles } from '../entities';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
-import { ConfigService } from '../config/config.service';
+import { ConfigService } from '../environment/config.service';
 import * as jwtr from "jwt-then";
 import { validLogin } from '../help/login.valid';
 
@@ -12,7 +12,7 @@ import { validLogin } from '../help/login.valid';
 @Injectable()
 export class AuthService{
   public jwtService: JwtService;
-  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof users
+  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof Users
 
   constructor(config: ConfigService) {
     
@@ -25,7 +25,7 @@ export class AuthService{
       throw new HttpException(loginValid.errorObj, 404);
     }
     
-    const user: any = await this.AUTH_REPOSITORY.findOne<users>({ where: { email: email } })
+    const user: any = await this.AUTH_REPOSITORY.findOne<Users>({ where: { email: email } })
     if (!user) {
       return null
     }
@@ -39,14 +39,14 @@ export class AuthService{
      
  public async login(user, res){   
     let permissions: any[] = [];
-    await this.AUTH_REPOSITORY.findAll<users>({
+    await this.AUTH_REPOSITORY.findAll<Users>({
       where: { id: user.id },
       include: [{
-        model: roles,
+        model: Roles,
       }]
 
     }).then((rolen: any) => rolen.forEach(el => {
-      el.roleId.forEach(element => {
+      el.dataRoleId.forEach(element => {
         permissions.push(element.dataValues.roleName);
       });
     }))

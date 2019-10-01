@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table
-export class auth extends Model<auth> {
+export class Auth extends Model<Auth> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -9,11 +9,11 @@ export class auth extends Model<auth> {
     unique: true,
     field: '_id',
   })
-  _id: number;
+  _id: Number;
 
   @Column
-  password: string;
+  password: String;
 
   @Column
-  email: string;
+  email: String;
 }

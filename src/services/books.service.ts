@@ -1,20 +1,24 @@
 import { Injectable, Inject, HttpException } from '@nestjs/common';
-import { books } from '../entities';
+import { Books } from '../entities';
 import { Response } from 'express';
 import { getRole } from '../help/actions';
 
+interface BookRes {
+  success: boolean
+  message?: string
+}
 
 @Injectable()
 export class BooksService {
   constructor(
-    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof books) { }
+    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof Books) { }
 
-  async findAll(): Promise<books[]> {
-    return await this.BOOKS_REPOSITORY.findAll<books>();
+  async findAll(): Promise<Books[]> {
+    return await this.BOOKS_REPOSITORY.findAll<Books>();
   }
 
-  async findOne(req, res): Promise<books> {
-    let book: any = await this.BOOKS_REPOSITORY.findOne<books>({ where: { _id: req.params.id } });
+  async findOne(req, res): Promise<Books> {
+    let book: any = await this.BOOKS_REPOSITORY.findOne<Books>({ where: { _id: req.params.id } });
     if(book){
       return res.status(200).send({
         success: true,
@@ -28,10 +32,10 @@ export class BooksService {
     }
   }
 
-  async updatBook(req, res): Promise<any> {
+  async updateBook(req, res): Promise<BookRes> {
     if(req.params.id) {
       const book = req.body;
-      await this.BOOKS_REPOSITORY.update<books>(book, { where: { _id: req.params.id } })
+      await this.BOOKS_REPOSITORY.update<Books>(book, { where: { _id: req.params.id } })
       return res.status(200).send({
         success: true
       });
@@ -42,34 +46,27 @@ export class BooksService {
 
   }
 
-  async deleteBook(req, res): Promise<any> {
+  async deleteBook(req, res): Promise<BookRes> {
     let role = await getRole(req.headers.authorization);
-    try{
-      if(role.isAdmin === 'admin'){
-        if (req.body) {
-        await req.body.forEach(async id => {
-            await this.BOOKS_REPOSITORY.destroy({ where: { _id: id } })
+    if(role.isAdmin === 'admin'){
+      if (req.body) {
+      await req.body.forEach(async id => {
+          await this.BOOKS_REPOSITORY.destroy({ where: { _id: id } })
+      });
+        return res.status(200).send({
+          success: true
         });
-          return res.status(200).send({
-            success: true
-          });
-        } else return res.status(404).send({
-          success: false,
-          message: 'Requset body is incorrect!',
-        });
-      }
-    }catch (err) {
-      res.status(500).send({
+      } else return res.status(404).send({
         success: false,
-        message: err
+        message: 'Requset body is incorrect!',
       });
     }
   }
 
-  async addBook(req, res): Promise<any> {
+  async addBook(req, res): Promise<BookRes> {
       if (req.body.title){
         const book = req.body;
-        await this.BOOKS_REPOSITORY.create<books>(book)
+        await this.BOOKS_REPOSITORY.create<Books>(book)
         return res.status(200).send({
           success: true,
           message: 'Add is done!'

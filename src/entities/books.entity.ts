@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table
-export class books extends Model<books> {
+export class Books extends Model<Books> {
 
   @Column({
     type: DataType.INTEGER,
@@ -10,20 +10,20 @@ export class books extends Model<books> {
     unique: true,
     field: '_id',
   })
-  _id: number;
+  _id: Number;
   
   @Column
-  title: string;
+  title: String;
 
   @Column
-  price: string;
+  price: String;
 
   @Column
-  description: string;
+  description: String;
 
   @Column
-  amount: string;
+  amount: String;
 
   @Column
-  choosePhoto: string;
+  choosePhoto: String;
 }
