@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Req, Put, Delete, UseGuards, Res } from '@nestjs/common';
 import { BooksService } from '../services';
-import { Request, Response } from 'express'
+import { Request } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('books')
@@ -14,25 +14,25 @@ export class BooksController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/takeEditBook/:id')
-    findOne(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.findOne(req, res);
+    findOne(@Req() book: Request): any {
+        return this.booksService.findOne(book);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    updateBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.updateBook(req, res);
+    updateBook(@Req() book: Request): any {
+        return this.booksService.updateBook(book);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/deleteBooks')
-    deleteBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.deleteBook(req, res);
+    deleteBook(@Req() book: Request): any {
+        return this.booksService.deleteBook(book);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    addBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.addBook(req, res);
+    addBook(@Req() book: Request): any {
+        return this.booksService.addBook(book);
     }
 }

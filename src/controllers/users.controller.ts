@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Req, Res, Put, Delete, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express'
+import { Controller, Get, Post, Req, Put, Delete, UseGuards } from '@nestjs/common';
+import { Request } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, UsersService } from '../services';
 
@@ -9,42 +9,42 @@ export class UsersController {
     constructor(private readonly usersService: UsersService, private readonly authService: AuthService) { }
     @UseGuards(AuthGuard('jwt'))
     @Get()
-    findAll(@Res() res: Response): any {
-        return this.usersService.findAll(res);
+    findAll(): any {
+        return this.usersService.findAll();
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/avatar/:id')
-    getAvatar(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.getAvatar(req, res);
+    getAvatar(@Req() avatar: Request) {
+        return this.usersService.getAvatar(avatar);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
-    changeAvatar(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.changeAvatar(req, res);
+    changeAvatar(@Req() avatar: Request) {
+        return this.usersService.changeAvatar(avatar);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/:id')
-    findOne(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.findOne(req, res);
+    findOne(@Req() user: Request): any {
+        return this.usersService.findOne(user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
-    delete(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.delete(req, res);
+    delete(@Req() user: Request): any {
+        return this.usersService.delete(user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    update(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.update(req, res);
+    update(@Req() user: Request): any {
+        return this.usersService.update(user);
     }
 
     @Post('/register')
-    registerNewUser(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.registerNewUser(req, res);
+    registerNewUser(@Req() user: Request): any {
+        return this.usersService.registerNewUser(user);
     }
 }

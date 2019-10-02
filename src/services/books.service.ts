@@ -13,67 +13,31 @@ export class BooksService {
     return  await this.BooksRepository.findAll()
   }
 
-
-  async findOne(req, res): Promise<Books> {
-    let book: any = await this.BooksRepository.findOne(req.params.id);
-    if(book){
-      return res.status(200).send({
-        success: true,
-        data: book
-      });
-    }else{
-      return res.status(204).send({
-        success: false,
-        message: 'Requset body is incorrect!',
-      });
-    }
+  async findOne(req): Promise<BookResponseModel> {
+    let book: Books = await this.BooksRepository.findOne(req.params.id);
+    return { success: true, data: book }
   }
 
-  async updateBook(req, res): Promise<BookResponseModel> {
-    let id = req.params.id;
-    if(id) { 
-      const book = req.body;
-      await this.BooksRepository.updateBook(book, id)
-      return res.status(200).send({
-        success: true
-      });
-    } else return res.status(204).send({
-      success: false,
-      message: 'Requset body is incorrect!',
-    });
-
+  async updateBook(updateBook): Promise<BookResponseModel> {
+    let id = updateBook.params.id;
+    const book = updateBook.body;
+    await this.BooksRepository.updateBook(book, id)
+    return { success: true }
   }
 
-  async deleteBook(req, res): Promise<BookResponseModel> {
-    let role = await getRole(req.headers.authorization);
+  async deleteBook(book): Promise<BookResponseModel> {
+    let role = await getRole(book.headers.authorization);
     if(role.isAdmin === 'admin'){
-      if (req.body) {
-      await req.body.forEach(async id => {
+      await book.body.forEach(async id => {
         await this.BooksRepository.deleteBook(id)
       });
-        return res.status(200).send({
-          success: true
-        });
-      } else return res.status(204).send({
-        success: false,
-        message: 'Requset body is incorrect!',
-      });
+      return { success: true }
     }
   }
 
-  async addBook(req, res): Promise<BookResponseModel> {
-      if (req.body.title){
-        const book = req.body;
-        await this.BooksRepository.addBook(book)
-        return res.status(200).send({
-          success: true,
-          message: 'Add is done!'
-        });
-      } else {
-        return res.status(204).send({
-          success: false,
-          message: 'Requset body is incorrect!',
-        });
-      }
+  async addBook(addBook): Promise<BookResponseModel> {
+    const book = addBook.body;
+    await this.BooksRepository.addBook(book)
+    return { success: true };
   }
 }

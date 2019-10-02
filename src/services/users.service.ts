@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Users } from '../entities';
 import * as bcrypt from 'bcrypt';
 import { getRole } from '../help/base.servis';
 import { UserResponseModel } from '../models';
@@ -13,108 +12,47 @@ export class UsersService {
     public UserRolesRepository: UserRolesRepository
   ) { }
 
-  async findAll(res): Promise<Users[]> {
+  async findAll(): Promise<UserResponseModel> {
     const users: any = await this.UsersRepository.findAll();
-    if (users.length !== 0) {
-      return res.status(200).send({
-        success: true,
-        data: users
-      });
-    } else {
-      return res.status(204).send({
-        success: false,
-        message: 'Users not found',
-        data: null
-      });
-    }
+      return { success: true, data: users }
   }
 
-  async findOne(req, res): Promise<Users[]> {
+  async findOne(req): Promise<UserResponseModel> {
     let role = await getRole(req.headers.authorization);
     if(role.isAdmin === 'admin'){
       const user = await this.UsersRepository.findOne({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: req.params.id } });
-      if (user) {
-        return res.status(200).send({
-          success: true,
-          data: user
-        });
-      } else {
-        return res.status(204).send({
-          success: false,
-          message: 'Requset body is incorrect!',
-          data: null
-        });
-      }
+      return { success: true, data: user }
     }
   }
 
-  async changeAvatar(req, res): Promise<Users[]> {
-    let id = req.params.id
-    const users = await this.UsersRepository.findOne({ where: { id: id } });
-    if (users) {
-      await this.UsersRepository.update(req.body, id)
-      return res.status(200).send({
-        success: true,
-        data: req.body.imageProfile
-      });
-    } else {
-      return res.status(204).send({
-        success: false,
-        message: 'Requset body is incorrect!',
-        data: null
-      });
-    }
+  async changeAvatar(user): Promise<UserResponseModel> {
+    let id = user.params.id
+    await this.UsersRepository.update(user.body, id)
+    return { success: true, data: user.body.imageProfile }
   }
 
-  async getAvatar(req, res): Promise<any> {
-    const users: any = await this.UsersRepository.findOne({ attributes: ['imageProfile'], where: { id: req.params.id } });
+  async getAvatar(user): Promise<UserResponseModel> {
+    const users: any = await this.UsersRepository.findOne({ attributes: ['imageProfile'], where: { id: user.params.id } });
     const avatar = users.dataValues.imageProfile
-      res.status(200).send({
-        success: true,
-        data: avatar
-      });
+    return { success: true, data: avatar }
   }
 
-  async delete(req, res): Promise<UserResponseModel> {
-    let role = await getRole(req.headers.authorization);
+  async delete(user): Promise<UserResponseModel> {
+    let role = await getRole(user.headers.authorization);
     if(role.isAdmin === 'admin'){
-      const check = await this.UsersRepository.findOne({ where: { id: req.params.id } })
-      if (check) {
-        await this.UserRolesRepository.destroyUserRoles({ where: { users_id: req.params.id } })
-        await this.UsersRepository.destroyUsers({ where: { id: req.params.id } })
-        return res.status(200).send({
-          success: true,
-          message: 'Delete is done'
-        });
-      } else {
-        return res.status(204).send({
-          success: false,
-          message: 'Requset body is incorrect!',
-          data: null
-        });
-      }
+      await this.UserRolesRepository.destroyUserRoles({ where: { users_id: user.params.id } })
+      await this.UsersRepository.destroyUsers({ where: { id: user.params.id } })
+      return { success: true }
     }
   }
 
-  async update(req, res): Promise<UserResponseModel> {
-    const check = await this.UsersRepository.findOne({ where: { id: req.params.id } });
-    if (check) {
-      await this.UsersRepository.update(req.body, req.params.id)
-      return res.status(200).send({
-        success: true,
-        message: 'Update is done'
-      });
-    } else {
-      return res.status(204).send({
-        success: false,
-        message: 'Requset body is incorrect!',
-        data: null
-      });
-    }
+  async update(user): Promise<UserResponseModel> {
+    await this.UsersRepository.update(user.body, user.params.id)
+    return { success: true }
   }
 
-  async registerNewUser(req, res): Promise<UserResponseModel> {
-      const registerObj = req.body;
+  async registerNewUser(user): Promise<UserResponseModel> {
+      const registerObj = user.body;
       const errorObj = {
           errorFirstname: '',
           errorSecondname: '',
@@ -143,11 +81,11 @@ export class UsersService {
       if(stateValid === 4){
         const newUser: any = {
           id: null,
-          firstname: req.body.firstname,
-          secondname: req.body.secondname,
-          password: await bcrypt.hash(req.body.password, 10),
-          email: req.body.email,
-          imageProfile: req.body.imageProfile
+          firstname: user.body.firstname,
+          secondname: user.body.secondname,
+          password: await bcrypt.hash(user.body.password, 10),
+          email: user.body.email,
+          imageProfile: user.body.imageProfile
         };
         const matchUser: any = await this.UsersRepository.findOne({ where: { email: newUser.email } })
         if (!matchUser) {
@@ -160,21 +98,10 @@ export class UsersService {
             roles_id: 2
           }
           await this.UserRolesRepository.create(newRole)
-          res.status(200).send({
-            success: true,
-            message: "User Successfully created"
-          });
-        } else return res.status(401).send({
-          success: false,
-          errorValid: false,
-          message: `User with E-mail:${matchUser.email} alredy exist!`
-        });
+           return { success: true, message: 'User Successfully created' }
+        } else return { success: false, errorValid: false, message: `User with E-mail:${matchUser.email} alredy exist!` }
     }else{
-      res.status(401).send({
-        success: false,
-        errorValid: true,
-        data: errorObj
-      });
+      return { success: false, errorValid: true, data: errorObj }
     }
   }
 }

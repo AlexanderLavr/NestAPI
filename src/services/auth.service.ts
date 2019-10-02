@@ -45,7 +45,7 @@ export class AuthService{
   }
 
      
- public async login(user, res){   
+ public async login(user){   
     let permissions: any = [];
     permissions = await this.AuthRepository.findAllRore(user.id, permissions)
  
@@ -57,9 +57,6 @@ export class AuthService{
       isAdmin: permissions[0]
     };
     const token = await jwtr.sign(userLogin, 'secret')
-     return res.status(200).send({
-      success: true,
-      data: token
-    });
+    return { success: true, data: token }
   }
 }
