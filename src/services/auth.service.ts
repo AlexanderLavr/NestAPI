@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
 import * as jwtr from 'jwt-then';
 import { AuthRepository } from '../repositories';
-
+import { jwtConstants } from '../secrets/jwtSecretKey';
 
 
 @Injectable()
@@ -48,7 +48,6 @@ export class AuthService{
  public async login(user){   
     let permissions: any = [];
     permissions = await this.AuthRepository.findAllRore(user.id, permissions)
- 
     const userLogin = {
       id: user.id,
       firstname: user.firstname,
@@ -56,7 +55,7 @@ export class AuthService{
       email: user.email,
       isAdmin: permissions[0]
     };
-    const token = await jwtr.sign(userLogin, 'secret')
+    const token = await jwtr.sign(userLogin, jwtConstants.secret)////
     return { success: true, data: token }
   }
 }

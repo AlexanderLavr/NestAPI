@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 export default {
@@ -10,7 +10,8 @@ export default {
     DB_PORT: process.env.DB_PORT,
     DB_USER: process.env.DB_USER,
 
-    JWT_ENCRYPTION: process.env.JWT_ENCRYPTION || "jwt_please_change",
+
+    JWT_ENCRYPTION: process.env.JWT_ENCRYPTION,
     JWT_EXPIRATION: process.env.JWT_EXPIRATION || "1h",
     SALT_ROUNDS: process.env.SALT_ROUNDS
 };

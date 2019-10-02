@@ -1,24 +1,24 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Books } from '../entities';
+import { Book } from '../entities';
 
 
 @Injectable()
 export class BooksRepository {
-    @Inject('BOOKS_REPOSITORY') public BOOKS_REPOSITORY: typeof Books
+    @Inject('BOOKS_REPOSITORY') public BOOKS_REPOSITORY: typeof Book
    
     async findAll(){
-        return  this.BOOKS_REPOSITORY.findAll<Books>();
+        return  this.BOOKS_REPOSITORY.findAll<Book>();
     }
     async findOne(id: string){
-        return this.BOOKS_REPOSITORY.findOne<Books>({ where: { _id: id }})
+        return this.BOOKS_REPOSITORY.findOne<Book>({ where: { _id: id }})
     }
-    async updateBook(book: Books, id: string){
-        return this.BOOKS_REPOSITORY.update<Books>(book, { where: { _id: id }})
+    async updateBook(book: Book, id: string){
+        return this.BOOKS_REPOSITORY.update<Book>(book, { where: { _id: id }})
     }
     async deleteBook(id: string){
         return this.BOOKS_REPOSITORY.destroy({ where: { _id: id } })
     }
-    async addBook(book: Books){
-        return this.BOOKS_REPOSITORY.create<Books>(book)
+    async addBook(book: Book){
+        return this.BOOKS_REPOSITORY.create<Book>(book)
     }
 }

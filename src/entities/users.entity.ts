@@ -2,20 +2,20 @@ import { Table, Column, Model, DataType, ForeignKey, BelongsToMany, BelongsTo } 
 
 
 @Table
-export class Users_roles extends Model<Users_roles> {
+export class User_Role extends Model<User_Role> {
 
-  @ForeignKey(() => Users)
+  @ForeignKey(() => User)
   @Column
   users_id: Number;
 
-  @ForeignKey(() => Roles)
+  @ForeignKey(() => Role)
   @Column
   roles_id: Number;
 }
 
 
 @Table
-export class Users extends Model<Users> {
+export class User extends Model<User> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -40,12 +40,12 @@ export class Users extends Model<Users> {
   @Column
   imageProfile: String;
 
-  @BelongsToMany(() => Roles, () => Users_roles)
-  dataRoleId: Users_roles[];
+  @BelongsToMany(() => Role, () => User_Role)
+  dataRoleId: User_Role[];
 }
 
 @Table
-export class Roles extends Model<Roles> {
+export class Role extends Model<Role> {
 
   @Column({
     type: DataType.INTEGER,
@@ -59,7 +59,7 @@ export class Roles extends Model<Roles> {
   roleName: String
 
 
-  @BelongsToMany(() => Users, () => Users_roles)
+  @BelongsToMany(() => User, () => User_Role)
   dataRole: String[];
 }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Books } from '../entities';
+import { Book } from '../entities';
 import { getRole } from '../help/base.servis';
 import  { BookResponseModel }  from '../models';
 import { BooksRepository } from '../repositories';
@@ -9,12 +9,12 @@ import { BooksRepository } from '../repositories';
 export class BooksService {
   constructor(public BooksRepository: BooksRepository ) { }
 
-  async findAll(): Promise<Books[]> {
+  async findAll(): Promise<Book[]> {
     return  await this.BooksRepository.findAll()
   }
 
   async findOne(req): Promise<BookResponseModel> {
-    let book: Books = await this.BooksRepository.findOne(req.params.id);
+    let book: Book = await this.BooksRepository.findOne(req.params.id);
     return { success: true, data: book }
   }
 
