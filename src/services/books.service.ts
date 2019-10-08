@@ -1,43 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { Book } from '../entities';
-import { getRole } from '../help/base.servis';
 import  { BookResponseModel }  from '../models';
 import { BooksRepository } from '../repositories';
 
 
 @Injectable()
 export class BooksService {
-  constructor(public BooksRepository: BooksRepository ) { }
+  constructor(public booksRepository: BooksRepository ) { }
 
   async findAll(): Promise<Book[]> {
-    return  await this.BooksRepository.findAll()
+    return  await this.booksRepository.findAll()
   }
 
-  async findOne(req): Promise<BookResponseModel> {
-    let book: Book = await this.BooksRepository.findOne(req.params.id);
+  async findOne(id): Promise<BookResponseModel> {
+    let book: Book = await this.booksRepository.findOne(id);
     return { success: true, data: book }
   }
 
-  async updateBook(updateBook): Promise<BookResponseModel> {
-    let id = updateBook.params.id;
-    const book = updateBook.body;
-    await this.BooksRepository.updateBook(book, id)
+  async updateBook(req): Promise<BookResponseModel> {
+    let id = req.params.id;
+    const book = req.body;
+    await this.booksRepository.updateBook(book, id)
     return { success: true }
   }
 
-  async deleteBook(book): Promise<BookResponseModel> {
-    let role = await getRole(book.headers.authorization);
-    if(role.isAdmin === 'admin'){
-      await book.body.forEach(async id => {
-        await this.BooksRepository.deleteBook(id)
-      });
-      return { success: true }
-    }
+  async deleteBook(deleteArr): Promise<BookResponseModel> {
+    await deleteArr.forEach(async id => {
+      await this.booksRepository.deleteBook(id)
+    });
+    return { success: true }
   }
 
-  async addBook(addBook): Promise<BookResponseModel> {
-    const book = addBook.body;
-    await this.BooksRepository.addBook(book)
+  async addBook(book): Promise<BookResponseModel> {
+    await this.booksRepository.addBook(book)
     return { success: true };
   }
 }

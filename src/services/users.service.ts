@@ -8,51 +8,44 @@ import { UsersRepository, UserRolesRepository } from '../repositories';
 @Injectable()
 export class UsersService {
   constructor(
-    public UsersRepository: UsersRepository,
-    public UserRolesRepository: UserRolesRepository
+    public usersRepository: UsersRepository,
+    public userRolesRepository: UserRolesRepository
   ) { }
 
   async findAll(): Promise<UserResponseModel> {
-    const users: any = await this.UsersRepository.findAll();
-      return { success: true, data: users }
+    const users: any = await this.usersRepository.findAll();
+    return { success: true, data: users }
   }
 
-  async findOne(req): Promise<UserResponseModel> {
-    let role = await getRole(req.headers.authorization);
-    if(role.isAdmin === 'admin'){
-      const user = await this.UsersRepository.findOne({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: req.params.id } });
-      return { success: true, data: user }
-    }
+  async findOne(_id): Promise<UserResponseModel> {
+    const user = await this.usersRepository.findOne({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: _id } });
+    return { success: true, data: user }
   }
 
-  async changeAvatar(user): Promise<UserResponseModel> {
-    let id = user.params.id
-    await this.UsersRepository.update(user.body, id)
-    return { success: true, data: user.body.imageProfile }
+  async changeAvatar(req): Promise<UserResponseModel> {
+    let id = req.params.id
+    await this.usersRepository.update(req.body, id)
+    return { success: true, data: req.body.imageProfile }
   }
 
-  async getAvatar(user): Promise<UserResponseModel> {
-    const users: any = await this.UsersRepository.findOne({ attributes: ['imageProfile'], where: { id: user.params.id } });
+  async getAvatar(_id): Promise<UserResponseModel> {
+    const users: any = await this.usersRepository.findOne({ attributes: ['imageProfile'], where: { id: _id } });
     const avatar = users.dataValues.imageProfile
     return { success: true, data: avatar }
   }
 
-  async delete(user): Promise<UserResponseModel> {
-    let role = await getRole(user.headers.authorization);
-    if(role.isAdmin === 'admin'){
-      await this.UserRolesRepository.destroyUserRoles({ where: { users_id: user.params.id } })
-      await this.UsersRepository.destroyUsers({ where: { id: user.params.id } })
-      return { success: true }
-    }
+  async delete(_id): Promise<UserResponseModel> {
+    await this.userRolesRepository.destroyUserRoles({ where: { users_id: _id } })
+    await this.usersRepository.destroyUsers({ where: { id: _id } })
+    return { success: true }
   }
 
-  async update(user): Promise<UserResponseModel> {
-    await this.UsersRepository.update(user.body, user.params.id)
+  async update(req): Promise<UserResponseModel> {
+    await this.usersRepository.update(req.body, req.params.id)
     return { success: true }
   }
 
   async registerNewUser(user): Promise<UserResponseModel> {
-      const registerObj = user.body;
       const errorObj = {
           errorFirstname: '',
           errorSecondname: '',
@@ -65,39 +58,39 @@ export class UsersService {
       const passWordExpr = new RegExp(/^[0-9]{3,}$/);
       const emailRegExpr = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
   
-      if(!inpRegExpr.test(registerObj.firstname)){
+      if(!inpRegExpr.test(user.firstname)){
           errorObj.errorFirstname = 'Error: допустимы буквы латинского алфавита менее 3-х';
       }else{++stateValid}
-      if(!inpRegExpr.test(registerObj.secondname)){
+      if(!inpRegExpr.test(user.secondname)){
           errorObj.errorSecondname = 'Error: допустимы буквы латинского алфавита менее 3-х';
       }else{++stateValid}
-      if(!emailRegExpr.test(registerObj.email)){
+      if(!emailRegExpr.test(user.email)){
           errorObj.errorEmail = 'Error: uncorrectEmail value!';
       }else{++stateValid}
-      if(!passWordExpr.test(registerObj.password)){
+      if(!passWordExpr.test(user.password)){
           errorObj.errorPassword = 'Error: допустимы цифры не менее 3-х';
       }else{++stateValid}
 
       if(stateValid === 4){
         const newUser: any = {
           id: null,
-          firstname: user.body.firstname,
-          secondname: user.body.secondname,
-          password: await bcrypt.hash(user.body.password, 10),
-          email: user.body.email,
-          imageProfile: user.body.imageProfile
+          firstname: user.firstname,
+          secondname: user.secondname,
+          password: await bcrypt.hash(user.password, 10),
+          email: user.email,
+          imageProfile: user.imageProfile
         };
-        const matchUser: any = await this.UsersRepository.findOne({ where: { email: newUser.email } })
+        const matchUser: any = await this.usersRepository.findOne({ where: { email: newUser.email } })
         if (!matchUser) {
-          await this.UsersRepository.create(newUser)
+          await this.usersRepository.create(newUser)
   
-          const user: any = await this.UsersRepository.findOne({ attributes: ['id'], where: { email: newUser.email } })
+          const user: any = await this.usersRepository.findOne({ attributes: ['id'], where: { email: newUser.email } })
           const newId = user.dataValues.id
           const newRole = {
             users_id: newId,
             roles_id: 2
           }
-          await this.UserRolesRepository.create(newRole)
+          await this.userRolesRepository.create(newRole)
            return { success: true, message: 'User Successfully created' }
         } else return { success: false, errorValid: false, message: `User with E-mail:${matchUser.email} alredy exist!` }
     }else{

@@ -7,6 +7,7 @@ import * as morgan from 'morgan';
 import conf from './environment/config'
 import { ExceptionHandlerFilter } from './common/exception-handler.filter';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cors());
@@ -15,7 +16,6 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(helmet());
   app.useGlobalFilters(new ExceptionHandlerFilter)
-
   await app.listen(conf.PORT);
   console.log(`Server is leasning on PORT  :  ${conf.PORT}`);
 }

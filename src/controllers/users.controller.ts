@@ -2,6 +2,9 @@ import { Controller, Get, Post, Req, Put, Delete, UseGuards } from '@nestjs/comm
 import { Request } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, UsersService } from '../services';
+import { RolesGuard } from '../common/role.guard';
+import { Roles } from '../common/role.decorator';
+
 
 
 @Controller('users')
@@ -15,36 +18,38 @@ export class UsersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/avatar/:id')
-    getAvatar(@Req() avatar: Request) {
-        return this.usersService.getAvatar(avatar);
+    getAvatar(@Req() req: Request) {
+        return this.usersService.getAvatar(req.params.id);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
-    changeAvatar(@Req() avatar: Request) {
-        return this.usersService.changeAvatar(avatar);
+    changeAvatar(@Req() req: Request) {
+        return this.usersService.changeAvatar(req);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/:id')
-    findOne(@Req() user: Request): any {
-        return this.usersService.findOne(user);
+    findOne(@Req() req: Request): any {
+        return this.usersService.findOne(req.params.id);
     }
 
     @UseGuards(AuthGuard('jwt'))
+    @UseGuards(RolesGuard)
+    @Roles('admin')
     @Delete('/:id')
-    delete(@Req() user: Request): any {
-        return this.usersService.delete(user);
+    delete(@Req() req: Request): any {
+        return this.usersService.delete(req.params.id);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    update(@Req() user: Request): any {
-        return this.usersService.update(user);
+    update(@Req() req: Request): any {
+        return this.usersService.update(req);
     }
 
     @Post('/register')
-    registerNewUser(@Req() user: Request): any {
-        return this.usersService.registerNewUser(user);
+    registerNewUser(@Req() req: Request): any {
+        return this.usersService.registerNewUser(req.body);
     }
 }

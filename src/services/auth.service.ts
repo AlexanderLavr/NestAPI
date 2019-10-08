@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
 import * as jwtr from 'jwt-then';
 import { AuthRepository } from '../repositories';
 import { jwtConstants } from '../secrets/jwtSecretKey';
+import { User } from '../entities';
 
 
 @Injectable()
 export class AuthService{
-  public jwtService: JwtService;
 
-  constructor(public AuthRepository : AuthRepository) {}
+  constructor(public authRepository : AuthRepository) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-
+  async validateUser(email: string, password: string): Promise<User> {
+   
     const errorObj = {
       logErrorEmail: '',
       logErrorPassword: ''
@@ -28,26 +27,28 @@ export class AuthService{
     if(!passWordExpr.test(password)){
         errorObj.logErrorPassword = 'Error: допустимы буквы латинского алфавита и цифры не менее 3-х';
     }else{++stateValid}
-
     if(stateValid !== 2 ){
       throw new HttpException(errorObj, 404);
     }
   
-    const user: any = await this.AuthRepository.findOneEmail(email)
+    let user: User|any = await this.authRepository.findOneEmail(email)
+  
     if (!user) {
       return null
     }
-
-    const matchPasswords = await this.AuthRepository.comparePassword(password, user.dataValues.password)
+   
+    const matchPasswords = await this.authRepository.comparePassword(password, user.dataValues.password)
+    
+    
     if (user && matchPasswords) {
       return user.dataValues;
     }else return null
   }
 
      
- public async login(user){   
-    let permissions: any = [];
-    permissions = await this.AuthRepository.findAllRore(user.id, permissions)
+ public async login(user){ 
+    let permissions: string[] = [];
+    permissions = await this.authRepository.findAllRore(user.id, permissions)
     const userLogin = {
       id: user.id,
       firstname: user.firstname,
@@ -55,7 +56,7 @@ export class AuthService{
       email: user.email,
       isAdmin: permissions[0]
     };
-    const token = await jwtr.sign(userLogin, jwtConstants.secret)////
+    const token = await jwtr.sign(userLogin, jwtConstants.secret)
     return { success: true, data: token }
   }
 }

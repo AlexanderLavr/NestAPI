@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from './db.connection/db-module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
 
 import { authProviders, booksProviders, usersProviders, rolesProviders, usersrolesProviders} from './providers';
 import { AuthController, UsersController, BooksController } from './controllers';
@@ -12,6 +13,7 @@ import { AuthRepository, BooksRepository, UsersRepository, UserRolesRepository }
 import { LocalStrategy, JwtStrategy } from './common';
 
 import { jwtConstants } from './secrets/jwtSecretKey';
+import { RolesGuard } from './common/role.guard';
 
 
 @Module({
@@ -24,6 +26,10 @@ import { jwtConstants } from './secrets/jwtSecretKey';
     }),],
   controllers: [BooksController, UsersController, AuthController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     AuthRepository,
     BooksRepository,
     UsersRepository,
@@ -31,7 +37,7 @@ import { jwtConstants } from './secrets/jwtSecretKey';
     LocalStrategy,
     JwtStrategy,
     BooksService,
-    ...booksProviders,
+  ...booksProviders,
     UsersService,
     ...usersProviders,
     AuthService,
