@@ -17,9 +17,7 @@ export class BooksService {
     return { success: true, data: book }
   }
 
-  async updateBook(req): Promise<BookResponseModel> {
-    let id = req.params.id;
-    const book = req.body;
+  async updateBook(id, book): Promise<BookResponseModel> {
     await this.booksRepository.updateBook(book, id)
     return { success: true }
   }

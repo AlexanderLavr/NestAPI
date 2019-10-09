@@ -22,10 +22,9 @@ export class UsersService {
     return { success: true, data: user }
   }
 
-  async changeAvatar(req): Promise<UserResponseModel> {
-    let id = req.params.id
-    await this.usersRepository.update(req.body, id)
-    return { success: true, data: req.body.imageProfile }
+  async changeAvatar(id, avatar): Promise<UserResponseModel> {
+    await this.usersRepository.update(avatar, id)
+    return { success: true, data: avatar.imageProfile }
   }
 
   async getAvatar(_id): Promise<UserResponseModel> {
@@ -40,8 +39,8 @@ export class UsersService {
     return { success: true }
   }
 
-  async update(req): Promise<UserResponseModel> {
-    await this.usersRepository.update(req.body, req.params.id)
+  async update(user, id): Promise<UserResponseModel> {
+    await this.usersRepository.update(user, id)
     return { success: true }
   }
 

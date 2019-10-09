@@ -25,7 +25,7 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
     changeAvatar(@Req() req: Request) {
-        return this.usersService.changeAvatar(req);
+        return this.usersService.changeAvatar(req.params.id, req.body);
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -45,7 +45,7 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
     update(@Req() req: Request): any {
-        return this.usersService.update(req);
+        return this.usersService.update(req.body, req.params.id);
     }
 
     @Post('/register')

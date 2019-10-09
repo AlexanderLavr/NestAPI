@@ -26,7 +26,7 @@ export class BooksController {
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
     updateBook(@Req() req: Request): any {
-        return this.booksService.updateBook(req);
+        return this.booksService.updateBook(req.params.id, req.body);
     }
 
     @UseGuards(AuthGuard('jwt'))
