@@ -3,7 +3,7 @@ import  Environments  from '../environment/config'
 @Catch()
 export class ExceptionHandlerFilter implements ExceptionFilter {
     catch(error: Error, host: ArgumentsHost) {
-        var logger = require('logzio-nodejs').createLogger({
+        let logger = require('logzio-nodejs').createLogger({
             token: 'PlstCoIDoKwqBslCYmLyXYyhBSjWLyVM',
             protocol: 'https',
             host: 'listener.logz.io',
@@ -19,7 +19,7 @@ export class ExceptionHandlerFilter implements ExceptionFilter {
         }
         if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
             if (process.env.NODE_ENV == Environments.toString()) {
-                var obj = {
+                let obj = {
                     message: error.message,
                     name: error.name,
                     stack: error.stack

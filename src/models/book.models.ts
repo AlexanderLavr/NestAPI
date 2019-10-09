@@ -5,3 +5,14 @@ export interface BookResponseModel {
     message?: string
     data?: Book
 }
+
+export interface BookRequestModel {
+    body?: Book 
+    params?:{
+        id:string
+    }
+}
+
+export interface DeleteBookModel {
+    body: string[] 
+}
